@@ -1,20 +1,32 @@
 import { useState } from "react";
 
 const App = () => {
-	const [hemo, setHemo] = useState(0)
-	const [elektro, setElektro] = useState(0);
-	const [result, setResult] = useState(0);
+	const [hemo, setHemo] = useState("")
+	const [elektro, setElektro] = useState("");
+	const [result, setResult] = useState("");
+	const [customErr, setCustomErr] = useState("")
 
 	
 	const calculate = (type: string, event: any) => {
+		let hemoTmp = hemo;
+		let elektroTmp = elektro;
 		if(type === "elektro") {
+			elektroTmp = event.target.value
 			setElektro(event.target.value)
 		} else if(type === "hemo"){
+			hemoTmp = event.target.value
 			setHemo(event.target.value)
 		}
-		let result = (hemo * 3) / (elektro * 100);
-		console.log(result)
-		setResult(result);
+		const upper = Number(hemoTmp) * 3;
+		const lower = Number(elektroTmp) * 100;
+		if(typeof lower === "number" && lower === 0) {
+			setCustomErr("Рақамлар нотўғри киритилган! ")
+		} else {
+			let result = (upper / lower).toFixed(2);
+			console.log(result)
+			setResult(result);
+			setCustomErr("")
+		}
 	}
 
 	return (
@@ -33,22 +45,24 @@ const App = () => {
 					placeholder="Гемоглобин"
 					value={hemo}
 					onChange={(e) => calculate("hemo", e)}
+					inputMode="numeric"
 				/>
 			</div>
 			<div className="mb-6">
 				<label
 					className="block text-gray-700 text-sm font-bold mb-2"
-					htmlFor="password"
+					htmlFor="eritrotsit"
 				>
 					Эритроцитлар сони
 				</label>
 				<input
-					className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+					className={`shadow appearance-none border ${customErr ? "border-red-500": ""} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`}
 					id="eritrotsit"
 					type="number"
-					placeholder="10"
+					placeholder="Эритроцитлар сони"
 					value={elektro}
 					onChange={(e) => calculate("elektro", e)}
+					inputMode="numeric"
 				/>
 			</div>
 			<div className="mb-6">
@@ -59,12 +73,14 @@ const App = () => {
 					Натижа
 				</label>
 				<input
-					className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+					className={`shadow appearance-none border ${customErr ? "border-red-500": ""} rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`}
 					id="result"
 					type="number"
 					value={result}	
+					readOnly
 				/>
 			</div>
+			{customErr && <p className="text-red-500 text-xs italic">{customErr}</p>}
 		</div>
 	);
 };
